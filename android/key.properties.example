@@ -1,0 +1,6 @@
+# Salin file ini menjadi 'key.properties' di folder android/ jika ingin melakukan signing release secara lokal.
+# JANGAN PERNAH COMMIT file 'key.properties' atau file '*.jks' ke repository publik!
+storePassword=password_keystore_anda
+keyPassword=password_key_anda
+keyAlias=upload
+storeFile=../upload-keystore.jks
