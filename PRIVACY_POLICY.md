@@ -1,43 +1,54 @@
-# Kebijakan Privasi (Privacy Policy) - Aplikasi Tes Buta Warna
+# Kebijakan Privasi (Privacy Policy) - Tes Buta Warna Lengkap
 
-**Terakhir diperbarui: 29 Agustus 2026**
+**Terakhir Diperbarui:** 04 September 2026
 
-Aplikasi **Tes Buta Warna (Ishihara Color Blindness Test)** ("kami", "aplikasi") menghargai dan berkomitmen penuh untuk melindungi privasi setiap pengguna. Dokumen ini menjelaskan bagaimana aplikasi kami beroperasi terkait data pengguna.
+Aplikasi **Tes Buta Warna Lengkap** dikembangkan oleh **Rhizky Putra (Rhizky Studio)** sebagai aplikasi gratis yang didukung iklan. Layanan ini disediakan tanpa biaya dan ditujukan untuk digunakan sebagaimana mestinya.
 
----
-
-## 1. Pengumpulan Data Pribadi
-Aplikasi kami beroperasi secara **100% Offline**. Kami **TIDAK MENGUMPULKAN, MENYIMPAN, ATAU MEMBAGIKAN** data pribadi pengguna apapun, termasuk namun tidak terbatas pada:
-- Nama, alamat email, atau nomor telepon.
-- Lokasi geografis (GPS).
-- Daftar kontak, foto, kamera, atau file pribadi perangkat.
-- Pengidentifikasi perangkat (Device ID/Advertising ID).
+Kebijakan Privasi ini digunakan untuk menginformasikan pengguna mengenai kebijakan kami terkait pengumpulan, penggunaan, dan pengungkapan Informasi Pribadi bagi siapa pun yang memutuskan untuk menggunakan Layanan kami.
 
 ---
 
-## 2. Penyimpanan Data Lokal (Offline Storage)
-- Seluruh riwayat hasil pemeriksaan tes buta warna disimpan secara eksklusif di dalam memori lokal perangkat smartphone Anda (*SharedPreferences*).
-- Kami tidak memiliki server eksternal, dan data riwayat tersebut tidak pernah dikirimkan ke internet.
-- Anda dapat menghapus seluruh riwayat data kapan saja melalui menu **Pengaturan > Hapus Semua Data Riwayat** di dalam aplikasi, atau dengan menghapus data aplikasi melalui pengaturan Android.
+### 1. Pengumpulan dan Penggunaan Informasi
+
+#### A. Data Pengujian & Hasil Medis (Lokal Perangkat)
+Aplikasi **Tes Buta Warna Lengkap** beroperasi secara **offline**. Semua data hasil pengujian penglihatan warna (seperti riwayat tes Ishihara, HRR, Farnsworth, Cambridge, dan catatan hasil) disimpan **hanya secara lokal** di dalam penyimpanan perangkat Anda (*local storage*). Kami **tidak pernah mengumpulkan, menyimpan, atau mentransmisikan data kesehatan atau hasil tes Anda ke server kami**.
+
+#### B. Layanan Pihak Ketiga & Iklan (Unity Ads)
+Untuk mendukung pengembangan aplikasi agar tetap gratis, aplikasi ini menggunakan layanan pihak ketiga untuk penayangan iklan, yaitu **Unity Ads**.
+Penyedia pihak ketiga ini dapat mengumpulkan informasi tertentu secara otomatis untuk tujuan penayangan dan personalisasi iklan, yang meliputi:
+* Pengidentifikasi Iklan Google Play (*Google Advertising ID / AD_ID*).
+* Informasi teknis perangkat (model perangkat, sistem operasi, resolusi layar, bahasa).
+* Lokasi perkiraan berdasarkan alamat IP.
+* Data performa dan interaksi iklan (misalnya tayangan iklan dan klik).
+
+Untuk informasi lebih lanjut tentang cara Unity menangani data pengguna, silakan kunjungi:
+👉 [Kebijakan Privasi Unity](https://unity.com/legal/privacy-policy)
 
 ---
 
-## 3. Ekspor PDF & Berbagi
-Fitur cetak dan ekspor laporan hasil tes ke format PDF diproses langsung di perangkat Anda. Jika Anda memilih untuk membagikan file PDF tersebut (misalnya via email atau aplikasi perpesanan), tindakan tersebut dilakukan sepenuhnya atas inisiatif dan kendali Anda.
+### 2. Izin Perangkat yang Digunakan
+* `INTERNET` & `ACCESS_NETWORK_STATE`: Digunakan semata-mata untuk memuat dan menayangkan iklan dari Unity Ads saat perangkat terhubung ke internet.
+* `AD_ID` (`com.google.android.gms.permission.AD_ID`): Digunakan oleh Unity Ads SDK untuk analitik periklanan sesuai kebijakan Google Play.
+* `WRITE_EXTERNAL_STORAGE` / Dokumen: Digunakan hanya saat Anda memilih untuk mengekspor hasil tes buta warna ke format dokumen PDF di perangkat Anda.
 
 ---
 
-## 4. Izin Aplikasi (Permissions)
-Aplikasi ini hanya meminta izin seminimal mungkin yang diperlukan untuk fungsi dasar antarmuka pengguna (seperti getaran haptik *VIBRATE*). Tidak ada izin berbahaya (*dangerous permissions*) yang diminta.
+### 3. Keamanan Data
+Keamanan data Anda adalah prioritas kami. Karena aplikasi ini tidak memiliki server basis data eksternal untuk data pribadi atau hasil tes mata, seluruh riwayat tes Anda tetap berada dalam kendali penuh di perangkat Anda.
 
 ---
 
-## 5. Disclaimer Medis
-Hasil pemeriksaan di dalam aplikasi ini ditujukan untuk keperluan skrining awal mandiri dan edukasi. Hasil ini tidak menggantikan diagnosis resmi oleh Dokter Spesialis Mata (Sp.M) atau optometris berlisensi.
+### 4. Privasi Anak-anak (Children's Privacy)
+Layanan kami tidak ditujukan untuk anak-anak di bawah usia 13 tahun. Kami tidak secara sengaja mengumpulkan informasi pengenal pribadi dari anak-anak di bawah 13 tahun. Jika Anda adalah orang tua atau wali dan Anda mengetahui bahwa anak Anda telah memberikan informasi pribadi kepada kami, silakan hubungi kami agar kami dapat mengambil tindakan yang diperlukan.
 
 ---
 
-## 6. Kontak Pengembang
-Jika Anda memiliki pertanyaan mengenai kebijakan privasi ini, silakan hubungi pengembang melalui:
-- **Email**: support@rhizk.dev (atau kontak pengembang pada profil Play Store)
-- **Repository**: https://github.com/rhizk/tes-buta-warna
+### 5. Perubahan pada Kebijakan Privasi Ini
+Kami dapat memperbarui Kebijakan Privasi kami dari waktu ke waktu. Anda disarankan untuk meninjau halaman ini secara berkala untuk mengetahui setiap perubahan. Perubahan tersebut berlaku segera setelah diposting di halaman ini.
+
+---
+
+### 6. Hubungi Kami
+Jika Anda memiliki pertanyaan atau saran tentang Kebijakan Privasi kami, jangan ragu untuk menghubungi pengembang melalui:
+* **Email Pengembang:** `rhizky99@gmail.com`
+* **Nama Pengembang:** Rhizky Putra
