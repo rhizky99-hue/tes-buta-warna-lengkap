@@ -10,6 +10,7 @@ import 'settings_screen.dart';
 import 'test_methods_hub_screen.dart';
 import 'package:animations/animations.dart';
 import '../core/utils/tutorial_coach_service.dart';
+import '../core/services/unity_ads_service.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -291,6 +292,13 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             ),
+      bottomNavigationBar: SafeArea(
+        child: Container(
+          height: 52,
+          alignment: Alignment.center,
+          child: UnityAdsService().buildBannerAd(),
+        ),
+      ),
     );
   }
 

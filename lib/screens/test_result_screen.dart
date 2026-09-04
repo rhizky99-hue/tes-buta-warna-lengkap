@@ -4,6 +4,7 @@ import '../core/constants/app_colors.dart';
 import '../core/utils/pdf_generator.dart';
 import '../data/models/test_result.dart';
 import 'test_intro_screen.dart';
+import '../core/services/unity_ads_service.dart';
 
 class TestResultScreen extends StatelessWidget {
   final TestResult result;
@@ -236,6 +237,13 @@ class TestResultScreen extends StatelessWidget {
               ],
             ),
           ),
+        ),
+      ),
+      bottomNavigationBar: SafeArea(
+        child: Container(
+          height: 52,
+          alignment: Alignment.center,
+          child: UnityAdsService().buildBannerAd(),
         ),
       ),
     );

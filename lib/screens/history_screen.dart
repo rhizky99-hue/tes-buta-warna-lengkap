@@ -5,6 +5,7 @@ import '../data/local_storage_service.dart';
 import '../data/models/test_result.dart';
 import 'test_result_screen.dart';
 import 'test_intro_screen.dart';
+import '../core/services/unity_ads_service.dart';
 
 class HistoryScreen extends StatefulWidget {
   const HistoryScreen({super.key});
@@ -126,6 +127,13 @@ class _HistoryScreenState extends State<HistoryScreen> {
                       ),
               ),
             ),
+      bottomNavigationBar: SafeArea(
+        child: Container(
+          height: 52,
+          alignment: Alignment.center,
+          child: UnityAdsService().buildBannerAd(),
+        ),
+      ),
     );
   }
 

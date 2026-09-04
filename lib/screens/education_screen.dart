@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../core/constants/app_colors.dart';
+import '../core/services/unity_ads_service.dart';
 
 class EducationScreen extends StatelessWidget {
   const EducationScreen({super.key});
@@ -220,6 +221,13 @@ class EducationScreen extends StatelessWidget {
               ],
             ),
           ),
+        ),
+      ),
+      bottomNavigationBar: SafeArea(
+        child: Container(
+          height: 52,
+          alignment: Alignment.center,
+          child: UnityAdsService().buildBannerAd(),
         ),
       ),
     );
