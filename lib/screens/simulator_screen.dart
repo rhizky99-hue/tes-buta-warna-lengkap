@@ -11,38 +11,38 @@ class SimulatorScreen extends StatefulWidget {
 }
 
 class _SimulatorScreenState extends State<SimulatorScreen> {
-  String _selectedFilter = 'normal'; // 'normal', 'protanopia', 'deuteranopia', 'tritanopia', 'achromatopsia'
+  String _selectedFilter = 'normal';
   int _selectedPlateIndex = 1; // Plate 2 (8->3)
 
   final Map<String, Map<String, dynamic>> _filterInfo = {
     'normal': {
       'title': 'Penglihatan Normal',
-      'subtitle': 'Trichromacy',
-      'desc': 'Memiliki ketiga jenis sel kerucut (L, M, S) yang berfungsi sempurna untuk menangkap jutaan variasi warna.',
+      'subtitle': 'Normal Trichromacy',
+      'desc': 'Ketiga jenis sel kerucut (L, M, S) berfungsi sempurna menangkap jutaan variasi rona warna spektral.',
       'color': AppColors.success,
     },
     'protanopia': {
       'title': 'Protanopia',
-      'subtitle': 'Buta Warna Merah',
-      'desc': 'Sel kerucut L (merah) tidak berfungsi. Warna merah tampak gelap, kecokelatan, atau menyerupai hijau kusam.',
+      'subtitle': 'Defisiensi Merah (Sel Kerucut L)',
+      'desc': 'Sel kerucut L tidak aktif. Warna merah tampak gelap, kecokelatan, atau menyerupai hijau kusam.',
       'color': AppColors.protanColor,
     },
     'deuteranopia': {
       'title': 'Deuteranopia',
-      'subtitle': 'Buta Warna Hijau',
-      'desc': 'Sel kerucut M (hijau) tidak berfungsi. Ini adalah tipe buta warna paling umum; hijau dan merah sering tertukar.',
+      'subtitle': 'Defisiensi Hijau (Sel Kerucut M)',
+      'desc': 'Sel kerucut M tidak aktif (tipe paling umum). Warna hijau dan merah tampak serupa dan saling tertukar.',
       'color': AppColors.deutanColor,
     },
     'tritanopia': {
       'title': 'Tritanopia',
-      'subtitle': 'Buta Warna Biru-Kuning',
-      'desc': 'Sel kerucut S (biru) tidak berfungsi (sangat langka). Biru tampak kehijauan dan kuning tampak merah muda/abu.',
+      'subtitle': 'Defisiensi Biru (Sel Kerucut S)',
+      'desc': 'Sel kerucut S tidak aktif (sangat langka). Warna biru tampak kehijauan dan kuning tampak merah muda/abu.',
       'color': AppColors.tritanColor,
     },
     'achromatopsia': {
       'title': 'Achromatopsia',
-      'subtitle': 'Buta Warna Total',
-      'desc': 'Seluruh sel kerucut tidak aktif. Dunia hanya terlihat dalam skala abu-abu (hitam, putih, abu-abu).',
+      'subtitle': 'Buta Warna Total (Monochromacy)',
+      'desc': 'Seluruh fotoreseptor sel kerucut tidak berfungsi. Pasien hanya melihat intensitas monokromatik (skala abu-abu).',
       'color': AppColors.monoColor,
     },
   };
@@ -58,9 +58,9 @@ class _SimulatorScreenState extends State<SimulatorScreen> {
 
   Color _simulate(Color c, String filter) {
     if (filter == 'normal') return c;
-    final r = (c.r * 255.0).round().clamp(0, 255) / 255.0;
-    final g = (c.g * 255.0).round().clamp(0, 255) / 255.0;
-    final b = (c.b * 255.0).round().clamp(0, 255) / 255.0;
+    final r = c.r;
+    final g = c.g;
+    final b = c.b;
 
     double outR, outG, outB;
     switch (filter) {
@@ -89,9 +89,8 @@ class _SimulatorScreenState extends State<SimulatorScreen> {
         return c;
     }
 
-    final alphaInt = (c.a * 255.0).round().clamp(0, 255);
     return Color.fromARGB(
-      alphaInt,
+      (c.a * 255.0).round().clamp(0, 255),
       (outR.clamp(0.0, 1.0) * 255).round(),
       (outG.clamp(0.0, 1.0) * 255).round(),
       (outB.clamp(0.0, 1.0) * 255).round(),
@@ -108,207 +107,259 @@ class _SimulatorScreenState extends State<SimulatorScreen> {
       appBar: AppBar(
         title: const Text('Simulator Penglihatan Warna'),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Filter Selector Chips
-            const Text(
-              'Pilih Jenis Penglihatan:',
-              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
-            ),
-            const SizedBox(height: 8),
+      body: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 640),
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Filter Selector Chips
+                const Text(
+                  'Pilih Jenis Penglihatan:',
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                ),
+                const SizedBox(height: 8),
 
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: _filterInfo.entries.map((entry) {
-                  final key = entry.key;
-                  final info = entry.value;
-                  final isSelected = _selectedFilter == key;
-                  final color = info['color'] as Color;
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: _filterInfo.entries.map((entry) {
+                      final key = entry.key;
+                      final info = entry.value;
+                      final isSelected = _selectedFilter == key;
+                      final color = info['color'] as Color;
 
-                  return Padding(
-                    padding: const EdgeInsets.only(right: 8),
-                    child: FilterChip(
-                      selected: isSelected,
-                      label: Text(info['title'] as String),
-                      selectedColor: color.withAlpha(40),
-                      checkmarkColor: color,
-                      labelStyle: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w700,
-                        color: isSelected ? color : (isDark ? Colors.white70 : Colors.black87),
+                      return Padding(
+                        padding: const EdgeInsets.only(right: 8),
+                        child: FilterChip(
+                          selected: isSelected,
+                          label: Text(info['title'] as String),
+                          selectedColor: color.withAlpha(25),
+                          checkmarkColor: color,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            side: BorderSide(
+                              color: isSelected ? color : (isDark ? AppColors.borderDark : AppColors.borderLight),
+                            ),
+                          ),
+                          labelStyle: TextStyle(
+                            fontSize: 11.5,
+                            fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                            color: isSelected ? color : (isDark ? Colors.white70 : Colors.black87),
+                          ),
+                          onSelected: (selected) {
+                            if (selected) {
+                              setState(() {
+                                _selectedFilter = key;
+                              });
+                            }
+                          },
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ),
+
+                const SizedBox(height: 16),
+
+                // Filter Explanation Card
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: isDark ? AppColors.cardDark : Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: isDark ? AppColors.borderDark : AppColors.borderLight,
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(6),
+                            decoration: BoxDecoration(
+                              color: (currentInfo['color'] as Color).withAlpha(25),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(Icons.remove_red_eye_rounded, color: currentInfo['color'] as Color, size: 18),
+                          ),
+                          const SizedBox(width: 10),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                currentInfo['title'] as String,
+                                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                              ),
+                              Text(
+                                currentInfo['subtitle'] as String,
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
-                      onSelected: (selected) {
-                        if (selected) {
+                      const SizedBox(height: 8),
+                      Text(
+                        currentInfo['desc'] as String,
+                        style: TextStyle(
+                          fontSize: 12,
+                          height: 1.4,
+                          color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 20),
+
+                // Live Ishihara Plate Simulation
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Simulasi pada Pelat Ishihara:',
+                      style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700),
+                    ),
+                    DropdownButton<int>(
+                      value: _selectedPlateIndex,
+                      underline: const SizedBox(),
+                      items: const [
+                        DropdownMenuItem(value: 0, child: Text('Pelat 1 (12)', style: TextStyle(fontSize: 12))),
+                        DropdownMenuItem(value: 1, child: Text('Pelat 2 (8->3)', style: TextStyle(fontSize: 12))),
+                        DropdownMenuItem(value: 2, child: Text('Pelat 3 (5->2)', style: TextStyle(fontSize: 12))),
+                        DropdownMenuItem(value: 3, child: Text('Pelat 4 (29->70)', style: TextStyle(fontSize: 12))),
+                        DropdownMenuItem(value: 5, child: Text('Pelat 6 (7)', style: TextStyle(fontSize: 12))),
+                        DropdownMenuItem(value: 11, child: Text('Pelat 12 (26)', style: TextStyle(fontSize: 12))),
+                      ],
+                      onChanged: (val) {
+                        if (val != null) {
                           setState(() {
-                            _selectedFilter = key;
+                            _selectedPlateIndex = val;
                           });
                         }
                       },
                     ),
-                  );
-                }).toList(),
-              ),
-            ),
-
-            const SizedBox(height: 16),
-
-            // Filter Explanation Card
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: isDark ? AppColors.cardDark : Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(
-                  color: (currentInfo['color'] as Color).withAlpha(80),
-                  width: 1.5,
+                  ],
                 ),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(6),
-                        decoration: BoxDecoration(
-                          color: (currentInfo['color'] as Color).withAlpha(30),
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(Icons.remove_red_eye_rounded, color: currentInfo['color'] as Color, size: 20),
-                      ),
-                      const SizedBox(width: 10),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            currentInfo['title'] as String,
-                            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800),
-                          ),
-                          Text(
-                            currentInfo['subtitle'] as String,
-                            style: TextStyle(
-                              fontSize: 11,
-                              color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
+                const SizedBox(height: 8),
+
+                Center(
+                  child: IshiharaCanvas(
+                    key: ValueKey('sim_${plate.id}_$_selectedFilter'),
+                    plate: plate,
+                    size: 240,
+                    visionFilter: _selectedFilter == 'normal' ? null : _selectedFilter,
                   ),
-                  const SizedBox(height: 8),
-                  Text(
-                    currentInfo['desc'] as String,
-                    style: TextStyle(
-                      fontSize: 12,
-                      height: 1.4,
-                      color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+                ),
+
+                const SizedBox(height: 24),
+
+                // Color Swatches Comparison
+                const Text(
+                  'Perbandingan Spektrum Warna (Normal vs Simulasi):',
+                  style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700),
+                ),
+                const SizedBox(height: 10),
+
+                GridView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                    childAspectRatio: 1.6,
+                    mainAxisSpacing: 8,
+                    crossAxisSpacing: 8,
+                  ),
+                  itemCount: _sampleColors.length,
+                  itemBuilder: (context, index) {
+                    final item = _sampleColors[index];
+                    final origColor = item['color'] as Color;
+                    final simColor = _simulate(origColor, _selectedFilter);
+
+                    return _ColorSwatchPair(
+                      name: item['name'] as String,
+                      originalColor: origColor,
+                      simulatedColor: simColor,
+                      isDark: isDark,
+                    );
+                  },
+                ),
+                const SizedBox(height: 16),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// Extracted Sub-Widget: Color Swatch Pair
+class _ColorSwatchPair extends StatelessWidget {
+  final String name;
+  final Color originalColor;
+  final Color simulatedColor;
+  final bool isDark;
+
+  const _ColorSwatchPair({
+    required this.name,
+    required this.originalColor,
+    required this.simulatedColor,
+    required this.isDark,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: isDark ? AppColors.cardDark : Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: isDark ? AppColors.borderDark : AppColors.borderLight,
+        ),
+      ),
+      child: Column(
+        children: [
+          Expanded(
+            child: Row(
+              children: [
+                Expanded(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: originalColor,
+                      borderRadius: const BorderRadius.only(topLeft: Radius.circular(11)),
                     ),
                   ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 20),
-
-            // Live Ishihara Plate Simulation
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  'Simulasi pada Pelat Ishihara:',
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
                 ),
-                DropdownButton<int>(
-                  value: _selectedPlateIndex,
-                  underline: const SizedBox(),
-                  items: const [
-                    DropdownMenuItem(value: 0, child: Text('Pelat 1 (12)')),
-                    DropdownMenuItem(value: 1, child: Text('Pelat 2 (8->3)')),
-                    DropdownMenuItem(value: 2, child: Text('Pelat 3 (5->2)')),
-                    DropdownMenuItem(value: 3, child: Text('Pelat 4 (29->70)')),
-                    DropdownMenuItem(value: 5, child: Text('Pelat 6 (7)')),
-                    DropdownMenuItem(value: 11, child: Text('Pelat 12 (26)')),
-                  ],
-                  onChanged: (val) {
-                    if (val != null) {
-                      setState(() {
-                        _selectedPlateIndex = val;
-                      });
-                    }
-                  },
+                Expanded(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: simulatedColor,
+                      borderRadius: const BorderRadius.only(topRight: Radius.circular(11)),
+                    ),
+                  ),
                 ),
               ],
             ),
-            const SizedBox(height: 8),
-
-            Center(
-              child: IshiharaCanvas(
-                key: ValueKey('sim_${plate.id}_$_selectedFilter'),
-                plate: plate,
-                size: 240,
-                visionFilter: _selectedFilter == 'normal' ? null : _selectedFilter,
-              ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4),
+            child: Text(
+              name,
+              style: const TextStyle(fontSize: 10.5, fontWeight: FontWeight.w600),
             ),
-
-            const SizedBox(height: 20),
-
-            // Spectrum Comparison Grid
-            const Text(
-              'Perbandingan Palet Spektrum Warna:',
-              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
-            ),
-            const SizedBox(height: 8),
-
-            GridView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 3,
-                childAspectRatio: 1.4,
-                crossAxisSpacing: 8,
-                mainAxisSpacing: 8,
-              ),
-              itemCount: _sampleColors.length,
-              itemBuilder: (context, idx) {
-                final item = _sampleColors[idx];
-                final baseColor = item['color'] as Color;
-                final simulated = _simulate(baseColor, _selectedFilter);
-
-                return Container(
-                  decoration: BoxDecoration(
-                    color: simulated,
-                    borderRadius: BorderRadius.circular(12),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withAlpha(20),
-                        blurRadius: 4,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  alignment: Alignment.center,
-                  child: Text(
-                    item['name'] as String,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w800,
-                      shadows: [
-                        Shadow(color: Colors.black54, blurRadius: 4),
-                      ],
-                    ),
-                  ),
-                );
-              },
-            ),
-            const SizedBox(height: 20),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

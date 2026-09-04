@@ -4,6 +4,7 @@ import '../core/constants/app_colors.dart';
 import '../data/local_storage_service.dart';
 import '../data/models/test_result.dart';
 import 'test_result_screen.dart';
+import 'test_intro_screen.dart';
 
 class HistoryScreen extends StatefulWidget {
   const HistoryScreen({super.key});
@@ -42,9 +43,11 @@ class _HistoryScreenState extends State<HistoryScreen> {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text('Hapus Semua Riwayat?'),
-        content: const Text('Seluruh catatan hasil tes yang tersimpan offline akan dihapus secara permanen.'),
+        title: const Text('Hapus Semua Riwayat?', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+        content: const Text(
+          'Seluruh catatan hasil tes yang tersimpan offline akan dihapus secara permanen.',
+          style: TextStyle(fontSize: 13, height: 1.4),
+        ),
         actions: [
           TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Batal')),
           ElevatedButton(
@@ -74,108 +77,59 @@ class _HistoryScreenState extends State<HistoryScreen> {
           if (_history.isNotEmpty)
             IconButton(
               tooltip: 'Hapus Semua',
-              icon: const Icon(Icons.delete_sweep_outlined),
+              icon: const Icon(Icons.delete_sweep_outlined, size: 22),
               onPressed: _clearAll,
             ),
         ],
       ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : _history.isEmpty
-              ? _buildEmptyState(isDark)
-              : ListView.separated(
-                  padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
-                  itemCount: _history.length,
-                  separatorBuilder: (_, __) => const SizedBox(height: 10),
-                  itemBuilder: (context, index) {
-                    final item = _history[index];
-                    final isNormal = item.diagnosis == DiagnosisType.normal;
-                    final statusColor = isNormal
-                        ? AppColors.success
-                        : (item.scorePercentage > 60 ? AppColors.warning : AppColors.error);
-
-                    return Dismissible(
-                      key: Key(item.id),
-                      direction: DismissDirection.endToStart,
-                      background: Container(
-                        alignment: Alignment.centerRight,
-                        padding: const EdgeInsets.only(right: 20),
-                        decoration: BoxDecoration(
-                          color: AppColors.error,
-                          borderRadius: BorderRadius.circular(14),
-                        ),
-                        child: const Icon(Icons.delete_rounded, color: Colors.white),
-                      ),
-                      onDismissed: (_) => _deleteItem(item.id),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: isDark ? AppColors.cardDark : Colors.white,
-                          borderRadius: BorderRadius.circular(14),
-                          border: Border.all(
-                            color: isDark ? AppColors.borderDark : AppColors.borderLight,
-                          ),
-                        ),
-                        child: ListTile(
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                          leading: Container(
-                            width: 44,
-                            height: 44,
-                            decoration: BoxDecoration(
-                              color: statusColor.withAlpha(25),
-                              shape: BoxShape.circle,
+          ? const Center(child: CircularProgressIndicator(strokeWidth: 2.5))
+          : Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 640),
+                child: _history.isEmpty
+                    ? _buildEmptyState(context, isDark)
+                    : ListView.separated(
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                        itemCount: _history.length,
+                        separatorBuilder: (_, __) => const SizedBox(height: 10),
+                        itemBuilder: (context, index) {
+                          final item = _history[index];
+                          return Dismissible(
+                            key: Key(item.id),
+                            direction: DismissDirection.endToStart,
+                            background: Container(
+                              alignment: Alignment.centerRight,
+                              padding: const EdgeInsets.only(right: 20),
+                              decoration: BoxDecoration(
+                                color: AppColors.error,
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              child: const Icon(Icons.delete_outline_rounded, color: Colors.white, size: 22),
                             ),
-                            child: Icon(
-                              isNormal ? Icons.check_circle_rounded : Icons.info_rounded,
-                              color: statusColor,
-                              size: 24,
+                            onDismissed: (_) => _deleteItem(item.id),
+                            child: _HistoryItemTile(
+                              item: item,
+                              dateFormat: dateFormat,
+                              isDark: isDark,
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => TestResultScreen(result: item),
+                                  ),
+                                );
+                              },
                             ),
-                          ),
-                          title: Text(
-                            item.diagnosisTitle,
-                            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          subtitle: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const SizedBox(height: 2),
-                              Text(
-                                '${dateFormat.format(item.timestamp)} • ${item.testMode == 'quick' ? 'Tes Cepat (12)' : 'Tes Lengkap (24)'}',
-                                style: TextStyle(
-                                  fontSize: 11,
-                                  color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                'Akurasi: ${item.scorePercentage.toStringAsFixed(0)}% (${item.correctCount}/${item.totalPlates} Benar)',
-                                style: TextStyle(
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.w600,
-                                  color: statusColor,
-                                ),
-                              ),
-                            ],
-                          ),
-                          trailing: const Icon(Icons.chevron_right_rounded, size: 22),
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => TestResultScreen(result: item),
-                              ),
-                            );
-                          },
-                        ),
+                          );
+                        },
                       ),
-                    );
-                  },
-                ),
+              ),
+            ),
     );
   }
 
-  Widget _buildEmptyState(bool isDark) {
+  Widget _buildEmptyState(BuildContext context, bool isDark) {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32),
@@ -185,27 +139,143 @@ class _HistoryScreenState extends State<HistoryScreen> {
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: AppColors.primary.withAlpha(20),
+                color: isDark ? AppColors.cardDark : const Color(0xFFF1F5F9),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(Icons.history_toggle_off_rounded, size: 48, color: AppColors.primary),
+              child: Icon(
+                Icons.history_toggle_off_rounded,
+                size: 48,
+                color: isDark ? Colors.white38 : Colors.black38,
+              ),
             ),
             const SizedBox(height: 16),
             const Text(
-              'Belum Ada Riwayat Tes',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+              'Belum Ada Riwayat Pemeriksaan',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
             ),
             const SizedBox(height: 6),
             Text(
-              'Setelah Anda menyelesaikan tes buta warna, ringkasan hasil dan diagnosis Anda akan tercatat di sini secara offline.',
+              'Hasil tes yang Anda jalankan akan tersimpan secara otomatis dan dapat Anda tinjau kembali di sini.',
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: 13,
+                fontSize: 12,
+                height: 1.45,
                 color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
-                height: 1.4,
               ),
             ),
+            const SizedBox(height: 20),
+            ElevatedButton.icon(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const TestIntroScreen(testMode: 'quick')),
+                );
+              },
+              icon: const Icon(Icons.play_arrow_rounded, size: 18),
+              label: const Text('Mulai Tes Sekarang'),
+            ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+// Extracted Sub-Widget: History Item Tile
+class _HistoryItemTile extends StatelessWidget {
+  final TestResult item;
+  final DateFormat dateFormat;
+  final bool isDark;
+  final VoidCallback onTap;
+
+  const _HistoryItemTile({
+    required this.item,
+    required this.dateFormat,
+    required this.isDark,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final isNormal = item.diagnosis == DiagnosisType.normal;
+    final statusColor = isNormal
+        ? AppColors.success
+        : (item.scorePercentage > 60 ? AppColors.warning : AppColors.error);
+
+    return Container(
+      decoration: BoxDecoration(
+        color: isDark ? AppColors.cardDark : Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: isDark ? AppColors.borderDark : AppColors.borderLight,
+        ),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(16),
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.all(14),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: statusColor.withAlpha(20),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    isNormal ? Icons.check_circle_rounded : Icons.info_outline_rounded,
+                    color: statusColor,
+                    size: 22,
+                  ),
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        item.diagnosisTitle,
+                        style: const TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 2),
+                      Builder(
+                        builder: (context) {
+                          String dateText;
+                          try {
+                            dateText = dateFormat.format(item.timestamp);
+                          } catch (_) {
+                            dateText = '${item.timestamp.day}/${item.timestamp.month}/${item.timestamp.year}';
+                          }
+                          return Text(
+                            dateText,
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+                            ),
+                          );
+                        },
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Akurasi: ${item.scorePercentage.toStringAsFixed(0)}% • ${item.correctCount}/${item.totalPlates} Benar',
+                        style: TextStyle(
+                          fontSize: 11.5,
+                          fontWeight: FontWeight.w600,
+                          color: statusColor,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const Icon(Icons.chevron_right_rounded, size: 20, color: Colors.grey),
+              ],
+            ),
+          ),
         ),
       ),
     );

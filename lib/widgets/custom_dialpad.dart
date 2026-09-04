@@ -9,6 +9,7 @@ class CustomDialpad extends StatelessWidget {
   final VoidCallback onBlankPressed;
   final VoidCallback onSubmit;
   final bool isSubmitting;
+  final bool hapticEnabled;
 
   const CustomDialpad({
     super.key,
@@ -18,10 +19,13 @@ class CustomDialpad extends StatelessWidget {
     required this.onBlankPressed,
     required this.onSubmit,
     this.isSubmitting = false,
+    this.hapticEnabled = true,
   });
 
   void _triggerHaptic() {
-    HapticFeedback.lightImpact();
+    if (hapticEnabled) {
+      HapticFeedback.lightImpact();
+    }
   }
 
   @override

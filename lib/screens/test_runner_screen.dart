@@ -7,6 +7,7 @@ import '../data/models/ishihara_plate.dart';
 import '../data/models/test_result.dart';
 import '../widgets/custom_dialpad.dart';
 import '../widgets/ishihara_canvas.dart';
+import '../core/services/unity_ads_service.dart';
 import 'test_result_screen.dart';
 
 class TestRunnerScreen extends StatefulWidget {
@@ -32,12 +33,25 @@ class _TestRunnerScreenState extends State<TestRunnerScreen> {
   Timer? _countdownTimer;
   int _secondsLeft = 0;
   int _plateStartTime = 0;
+  bool _hapticEnabled = true;
 
   @override
   void initState() {
     super.initState();
     _plates = IshiharaDataset.getPlatesForMode(widget.testMode);
+    _loadHapticSetting();
+    // Pra-muat iklan interstitial agar siap tampil di akhir tes
+    UnityAdsService().loadInterstitial();
     _startPlateTimer();
+  }
+
+  Future<void> _loadHapticSetting() async {
+    final haptic = await LocalStorageService().getHapticEnabled();
+    if (mounted) {
+      setState(() {
+        _hapticEnabled = haptic;
+      });
+    }
   }
 
   @override
@@ -60,7 +74,6 @@ class _TestRunnerScreenState extends State<TestRunnerScreen> {
             _secondsLeft--;
           } else {
             _countdownTimer?.cancel();
-            // Auto submit when time runs out
             _submitAnswer();
           }
         });
@@ -121,7 +134,6 @@ class _TestRunnerScreenState extends State<TestRunnerScreen> {
         _startPlateTimer();
       });
     } else {
-      // Completed all plates!
       _finishTest();
     }
   }
@@ -129,21 +141,25 @@ class _TestRunnerScreenState extends State<TestRunnerScreen> {
   Future<void> _finishTest() async {
     _countdownTimer?.cancel();
 
-    // Evaluate diagnostic result
     final result = IshiharaDataset.evaluateTest(
       testMode: widget.testMode,
       answers: _answers,
     );
 
-    // Save offline
     await LocalStorageService().saveTestResult(result);
 
     if (!mounted) return;
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (_) => TestResultScreen(result: result),
-      ),
+
+    UnityAdsService().showInterstitial(
+      onDismissed: () {
+        if (!mounted) return;
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (_) => TestResultScreen(result: result),
+          ),
+        );
+      },
     );
   }
 
@@ -151,13 +167,15 @@ class _TestRunnerScreenState extends State<TestRunnerScreen> {
     final shouldLeave = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text('Hentikan Tes?'),
-        content: const Text('Proses tes yang sedang berjalan tidak akan tersimpan jika Anda keluar sekarang.'),
+        title: const Text('Hentikan Tes?', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+        content: const Text(
+          'Proses pemeriksaan yang sedang berlangsung tidak akan tersimpan jika Anda keluar sekarang.',
+          style: TextStyle(fontSize: 13, height: 1.4),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Lanjutkan Tes'),
+            child: const Text('Lanjutkan'),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
@@ -170,6 +188,21 @@ class _TestRunnerScreenState extends State<TestRunnerScreen> {
 
     if (shouldLeave == true && mounted) {
       Navigator.pop(context);
+    }
+  }
+
+  String _getPlateTypeLabel(PlateType type) {
+    switch (type) {
+      case PlateType.introductory:
+        return 'Pelat Kontrol / Pengenalan';
+      case PlateType.transformation:
+        return 'Pelat Transformasi';
+      case PlateType.vanishing:
+        return 'Pelat Memudar (Vanishing)';
+      case PlateType.hiddenDigit:
+        return 'Pelat Angka Tersembunyi';
+      case PlateType.diagnostic:
+        return 'Pelat Diagnostik Kuantitatif';
     }
   }
 
@@ -191,95 +224,124 @@ class _TestRunnerScreenState extends State<TestRunnerScreen> {
             icon: const Icon(Icons.close_rounded),
             onPressed: _showExitConfirmDialog,
           ),
-          title: Text('Pelat ${_currentIndex + 1} dari ${_plates.length}'),
+          title: Text(
+            'Pelat ${_currentIndex + 1} dari ${_plates.length}',
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+          ),
           actions: [
             if (widget.timerPerPlate > 0)
               Container(
                 margin: const EdgeInsets.only(right: 16),
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
-                  color: _secondsLeft <= 1 ? AppColors.error : AppColors.primary,
+                  color: _secondsLeft <= 1 ? AppColors.error.withAlpha(30) : AppColors.primary.withAlpha(25),
                   borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: _secondsLeft <= 1 ? AppColors.error : AppColors.primary,
+                    width: 1,
+                  ),
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.timer_outlined, color: Colors.white, size: 16),
+                    Icon(
+                      Icons.timer_outlined,
+                      color: _secondsLeft <= 1 ? AppColors.error : AppColors.primary,
+                      size: 15,
+                    ),
                     const SizedBox(width: 4),
                     Text(
                       '${_secondsLeft}s',
-                      style: const TextStyle(
-                        color: Colors.white,
+                      style: TextStyle(
+                        color: _secondsLeft <= 1 ? AppColors.error : AppColors.primary,
                         fontWeight: FontWeight.w800,
-                        fontSize: 13,
+                        fontSize: 12,
                       ),
                     ),
                   ],
                 ),
               ),
           ],
+          bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(4),
+            child: LinearProgressIndicator(
+              value: progress,
+              backgroundColor: isDark ? AppColors.cardDark : AppColors.borderLight,
+              valueColor: const AlwaysStoppedAnimation<Color>(AppColors.primary),
+              minHeight: 4,
+            ),
+          ),
         ),
         body: SafeArea(
-          child: Column(
-            children: [
-              // Progress Bar
-              LinearProgressIndicator(
-                value: progress,
-                backgroundColor: isDark ? AppColors.cardDark : AppColors.borderLight,
-                valueColor: const AlwaysStoppedAnimation<Color>(AppColors.primary),
-                minHeight: 4,
-              ),
-
-              // Main Test Content
-              Expanded(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
-                  child: Column(
-                    children: [
-                      // Zoom & Inspection Hint
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.pinch_rounded,
-                            size: 16,
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 500),
+              child: Column(
+                children: [
+                  // Plate Category Sub-header
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(18, 10, 18, 0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          _getPlateTypeLabel(currentPlate.plateType),
+                          style: TextStyle(
+                            fontSize: 11.5,
+                            fontWeight: FontWeight.w600,
                             color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
                           ),
-                          const SizedBox(width: 6),
-                          Text(
-                            'Cubit / Zoom untuk memperbesar pelat',
-                            style: TextStyle(
-                              fontSize: 11,
-                              color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+                        ),
+                        Row(
+                          children: [
+                            Icon(Icons.pinch_rounded, size: 14, color: isDark ? Colors.white38 : Colors.black38),
+                            const SizedBox(width: 4),
+                            Text(
+                              'Pinch zoom',
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: isDark ? Colors.white38 : Colors.black38,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // Main Test Area: Canvas & Dialpad
+                  Expanded(
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+                      child: Column(
+                        children: [
+                          const SizedBox(height: 6),
+                          // Authentic Ishihara Plate Canvas
+                          Center(
+                            child: IshiharaCanvas(
+                              key: ValueKey('plate_${currentPlate.id}'),
+                              plate: currentPlate,
+                              size: 250,
                             ),
                           ),
+                          const SizedBox(height: 12),
+
+                          // Dialpad
+                          CustomDialpad(
+                            currentValue: _currentInput,
+                            hapticEnabled: _hapticEnabled,
+                            onDigitPressed: _onDigitPressed,
+                            onBackspace: _onBackspace,
+                            onBlankPressed: _onBlankPressed,
+                            onSubmit: _submitAnswer,
+                          ),
+                          const SizedBox(height: 8),
                         ],
                       ),
-                      const SizedBox(height: 8),
-
-                      // Authentic Ishihara Plate Canvas
-                      Center(
-                        child: IshiharaCanvas(
-                          key: ValueKey('plate_${currentPlate.id}'),
-                          plate: currentPlate,
-                          size: 260,
-                        ),
-                      ),
-
-                      const SizedBox(height: 14),
-
-                      // Interactive Dialpad
-                      CustomDialpad(
-                        currentValue: _currentInput,
-                        onDigitPressed: _onDigitPressed,
-                        onBackspace: _onBackspace,
-                        onBlankPressed: _onBlankPressed,
-                        onSubmit: _submitAnswer,
-                      ),
-                    ],
+                    ),
                   ),
-                ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
       ),

@@ -1,22 +1,26 @@
-# 👁️ Tes Buta Warna (Ishihara Color Blindness Test) - Flutter Android
+# 👁️ Tes Buta Warna Lengkap - Flutter Android
+> **Created By Rhizky Putra**
 
-Aplikasi mobile Android **100% Offline** berbasis **Flutter** untuk pemeriksaan & diagnosis buta warna mandiri dengan standar medis **Pelat Pseudoisokromatik Ishihara**. Dilengkapi dengan otomatisasi build **APK & AAB (Google Play Store)** menggunakan **GitHub Actions CI/CD**.
+Aplikasi mobile Android **100% Offline** berbasis **Flutter** untuk pemeriksaan & diagnosis buta warna mandiri dengan standar medis **Pelat Pseudoisokromatik Ishihara** dan 4 metode oftalmologi klinis internasional. Dilengkapi dengan otomatisasi build **APK & AAB (Google Play Store)** menggunakan **GitHub Actions CI/CD**.
 
 ---
 
 ## ✨ Fitur Utama
 
 - ⚡ **100% Offline & Aman**: Seluruh kalkulasi diagnostik diproses di perangkat tanpa koneksi internet.
-- 🎯 **Mode Tes Komprehensif**:
-  - **Tes Cepat (12 Pelat)**: Skrining kilat < 2 menit untuk pemeriksaan harian/berkala.
-  - **Tes Lengkap (24 Pelat)**: Diagnosis akurat standar medis untuk klasifikasi **Protanopia**, **Deuteranopia**, **Protanomali**, **Deuteranomali**, atau **Buta Warna Total**.
-- 🔍 **Pelat Ishihara Vektor Beresolusi Tinggi**: Di-render secara prosedural dengan dukungan pinch-to-zoom & pan interaktif.
-- 🔢 **Dialpad Sentuhan Responsif**: Tombol angka besar, tombol cepat *"Tidak Terlihat"*, dan haptic feedback.
+- 🎯 **5 Metode Tes Penglihatan Warna Klinis**:
+  - 📖 **Tes Ishihara (12 & 24 Pelat)**: Standar seleksi kedinasan untuk klasifikasi Protanopia, Deuteranopia, Protanomali, dan Deuteranomali.
+  - 🔺 **Tes HRR (Hardy-Rand-Rittler)**: Pelat simbol bentuk geometris (*Lingkaran, Segitiga, Silang*) untuk deteksi defisiensi spektrum Merah-Hijau hingga Biru-Kuning (Tritanopia), sangat ramah anak & pasien buta aksara.
+  - 🎨 **Tes Farnsworth-Munsell 100-Hue (D-15)**: Penyusunan urutan gradasi warna halus interaktif (tap-to-swap) untuk mengukur *Total Error Score* (TES) & ketajaman diskriminasi nuansa tipis.
+  - 🔬 **Simulasi Nagel Anomaloskop**: Standar emas optik *Rayleigh Match* (campuran Merah-Hijau vs Kuning Spektral murni) dengan kalkulasi *Anomalie Quotient* (AQ).
+  - 💻 **Tes Cambridge (Cambridge Colour Test)**: Pengujian komputerisasi celah cincin Landolt C di atas matriks *chromatic noise* untuk mengukur ambang batas kontras kromatik.
+- 🔍 **Kanvas Prosedural Vektor Beresolusi Tinggi**: Di-render secara prosedural dengan dukungan pinch-to-zoom & pan interaktif.
+- 🔢 **Dialpad & Kontrol Responsif**: Dialpad angka besar, keypad bentuk HRR, kontrol arah Landolt C, dan slider mikrometer optik.
 - ⏱️ **Pengaturan Timer Medis**: Opsi 3 detik, 5 detik, atau tanpa batas waktu.
 - 📄 **Ekspor Laporan Medis ke PDF**: Simpan atau cetak sertifikat hasil tes dengan rincian per pelat.
 - 💾 **Riwayat Pemeriksaan Lokal**: Menyimpan catatan hasil tes offline.
 - 🌈 **Simulator Penglihatan Buta Warna**: Visualisasi langsung perbedaan pandangan mata Normal vs Protan vs Deutan vs Tritan vs Total.
-- 📚 **Panduan & Syarat Kedinasan**: Informasi syarat tes buta warna untuk TNI, POLRI, Kedokteran, Masinis PT KAI, Pelayaran, dan Pilot.
+- 📚 **Panduan Kedinasan & Ensiklopedia**: Syarat TNI, POLRI, Kedokteran, KAI, Pelayaran, Pilot, serta kajian ilmiah 5 metode tes.
 - 🌓 **Tema Gelap & Terang (Material 3)**: Desain modern, bersih, dan hemat baterai (AMOLED Dark Mode).
 
 ---

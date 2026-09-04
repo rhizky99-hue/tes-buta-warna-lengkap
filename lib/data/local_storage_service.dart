@@ -8,6 +8,7 @@ class LocalStorageService {
   static const String _keySoundEnabled = 'app_sound_enabled';
   static const String _keyHapticEnabled = 'app_haptic_enabled';
   static const String _keyTimerDuration = 'app_timer_duration'; // in seconds (0 = disabled, 3, 5, 10)
+  static const String _keyHasSeenTour = 'app_has_seen_tour';
 
   // Singleton instance
   static final LocalStorageService _instance = LocalStorageService._internal();
@@ -106,5 +107,27 @@ class LocalStorageService {
   Future<void> setTimerDuration(int seconds) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt(_keyTimerDuration, seconds);
+  }
+
+  Future<bool> hasSeenTour() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_keyHasSeenTour) ?? false;
+  }
+
+  Future<void> setTourSeen(bool seen) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_keyHasSeenTour, seen);
+  }
+
+  static const String _keyUnityGameId = 'unity_game_id';
+
+  Future<String?> getUnityGameId() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_keyUnityGameId);
+  }
+
+  Future<void> setUnityGameId(String id) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_keyUnityGameId, id);
   }
 }

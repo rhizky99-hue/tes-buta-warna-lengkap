@@ -8,8 +8,12 @@ import '../../data/models/test_result.dart';
 class PdfReportGenerator {
   static Future<Uint8List> generateTestReport(TestResult result, {String userName = 'Pengguna'}) async {
     final pdf = pw.Document();
-    final dateFormat = DateFormat('dd MMMM yyyy, HH:mm', 'id_ID');
-    final formattedDate = dateFormat.format(result.timestamp);
+    String formattedDate;
+    try {
+      formattedDate = DateFormat('dd MMMM yyyy, HH:mm', 'id_ID').format(result.timestamp);
+    } catch (_) {
+      formattedDate = '${result.timestamp.day}/${result.timestamp.month}/${result.timestamp.year} ${result.timestamp.hour.toString().padLeft(2, '0')}:${result.timestamp.minute.toString().padLeft(2, '0')}';
+    }
 
     final isNormal = result.diagnosis == DiagnosisType.normal;
     final primaryColor = PdfColor.fromHex('#0F766E');
@@ -44,10 +48,10 @@ class PdfReportGenerator {
                       ),
                       pw.SizedBox(height: 4),
                       pw.Text(
-                        'Metode Standar Uji Pseudoisokromatik Ishihara (Offline)',
+                        'Tes Buta Warna Lengkap • Created By Rhizky Putra',
                         style: const pw.TextStyle(
                           color: PdfColors.white,
-                          fontSize: 11,
+                          fontSize: 10.5,
                         ),
                       ),
                     ],
@@ -221,7 +225,7 @@ class PdfReportGenerator {
                 border: pw.Border(top: pw.BorderSide(color: PdfColors.grey400, width: 0.5)),
               ),
               child: pw.Text(
-                'Disclaimer Medis: Dokumen ini diterbitkan oleh Aplikasi Tes Buta Warna Indonesia untuk keperluan skrining awal mandiri. '
+                'Disclaimer Medis: Dokumen ini diterbitkan oleh Aplikasi Tes Buta Warna Lengkap (Created By Rhizky Putra) untuk keperluan skrining awal mandiri. '
                 'Hasil tidak bersifat mengikat secara hukum atau menggantikan surat keterangan resmi dari Dokter Spesialis Mata (Sp.M).',
                 style: const pw.TextStyle(fontSize: 8, color: PdfColors.grey600),
                 textAlign: pw.TextAlign.center,

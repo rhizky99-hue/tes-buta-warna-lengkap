@@ -1,6 +1,7 @@
 class AppStrings {
-  static const String appName = 'Tes Buta Warna';
+  static const String appName = 'Tes Buta Warna Lengkap';
   static const String appSubtitle = 'Pemeriksaan Ishihara Medis & Diagnosis Akurat';
+  static const String appCreator = 'Created By Rhizky Putra';
   static const String appVersion = '1.0.0';
 
   // Test Modes

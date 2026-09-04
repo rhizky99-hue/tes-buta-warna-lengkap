@@ -1,11 +1,31 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:intl/date_symbol_data_local.dart';
+import 'core/services/unity_ads_service.dart';
 import 'core/theme/app_theme.dart';
-import 'data/local_storage_service.dart';
-import 'screens/home_screen.dart';
+import 'core/theme/theme_controller.dart';
+import 'screens/splash_screen.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+
+  // Inisialisasi format tanggal bahasa Indonesia untuk hasil tes dan PDF
+  try {
+    await initializeDateFormatting('id_ID', null);
+  } catch (e) {
+    debugPrint('Gagal inisialisasi locale id_ID: $e');
+  }
+
+  // Muat tema yang tersimpan
+  await ThemeController.loadTheme();
+
+  if (!kIsWeb) {
+    FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+    // Inisialisasi Unity Ads Mode Produksi (Iklan Nyata)
+    UnityAdsService().init(testMode: false);
+  }
 
   // Set preferred orientations for mobile screening
   await SystemChrome.setPreferredOrientations([
@@ -16,46 +36,23 @@ void main() async {
   runApp(const TesButaWarnaApp());
 }
 
-class TesButaWarnaApp extends StatefulWidget {
+class TesButaWarnaApp extends StatelessWidget {
   const TesButaWarnaApp({super.key});
 
   @override
-  State<TesButaWarnaApp> createState() => _TesButaWarnaAppState();
-}
-
-class _TesButaWarnaAppState extends State<TesButaWarnaApp> {
-  ThemeMode _themeMode = ThemeMode.system;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadTheme();
-  }
-
-  Future<void> _loadTheme() async {
-    final mode = await LocalStorageService().getThemeMode();
-    if (mounted) {
-      setState(() {
-        if (mode == 'light') {
-          _themeMode = ThemeMode.light;
-        } else if (mode == 'dark') {
-          _themeMode = ThemeMode.dark;
-        } else {
-          _themeMode = ThemeMode.system;
-        }
-      });
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Tes Buta Warna',
-      debugShowCheckedModeBanner: false,
-      theme: AppTheme.lightTheme,
-      darkTheme: AppTheme.darkTheme,
-      themeMode: _themeMode,
-      home: const HomeScreen(),
+    return ValueListenableBuilder<ThemeMode>(
+      valueListenable: ThemeController.themeMode,
+      builder: (context, themeMode, child) {
+        return MaterialApp(
+          title: 'Tes Buta Warna Lengkap',
+          debugShowCheckedModeBanner: false,
+          theme: AppTheme.lightTheme,
+          darkTheme: AppTheme.darkTheme,
+          themeMode: themeMode,
+          home: const SplashScreen(),
+        );
+      },
     );
   }
 }
