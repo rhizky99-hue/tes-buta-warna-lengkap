@@ -30,7 +30,7 @@ if (keystorePropertiesFile.exists()) {
 
 android {
     namespace "com.rhizk.tesbutawarna"
-    compileSdk 34
+    compileSdk = flutter.compileSdkVersion
     ndkVersion flutter.ndkVersion
 
     compileOptions {
